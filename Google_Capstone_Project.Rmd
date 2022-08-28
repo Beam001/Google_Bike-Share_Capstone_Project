@@ -191,6 +191,8 @@ colnames(trips_data_v2)
 
 write.csv(trips_data_v2,"C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\ANALYZED\\analyzed_trips_v2.csv", row.names = FALSE)
 ```
+# TABLEAU DASHBOARD RESULT;
+https://public.tableau.com/app/profile/segun.olubimo/viz/BikeShareUpdate/Dashboard1?publish=yes
 
 
 
