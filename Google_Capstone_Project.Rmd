@@ -1,0 +1,197 @@
+---
+title: "Google_Capstone_Project"
+author: "Segun"
+date: "2022-08-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+## INTRODUCTION
+
+As a data analyst working in the marketing analyst team at Cyclistic, a bike-share company in Chicago, I have been tasked to analyze 12 months historical trip data of annual members and casual riders to investigate some trends between these two classes of riders. This is in a bit to understand how to best ensure future success of Cyclistic. 
+
+# Background
+
+In 2016, Cyclistic launched a successful bike-share oﬀering. Since then, the program has grown to a ﬂeet of 5,824 bicycles that are geotracked and locked into a network of 692 stations across Chicago. The bikes can be unlocked from one station and returned to any other station in the system anytime.
+
+Until now, Cyclistic’s marketing strategy relied on building general awareness and appealing to broad consumer segments. One approach that helped make these things possible was the ﬂexibility of its pricing plans: single-ride passes, full-day passes, and annual memberships. Customers who purchase single-ride or full-day passes are referred to as casual riders. Customers who purchase annual memberships are Cyclistic members.
+
+Cyclistic’s ﬁnance analysts have concluded that annual members are much more proﬁtable than casual riders. Although the pricing ﬂexibility helps Cyclistic attract more customers, Moreno believes that maximizing the number of annual members will be key to future growth. Rather than creating a marketing campaign that targets all-new customers, Moreno believes there is a very good chance to convert casual riders into members. She notes that casual riders are already aware of the Cyclistic program and have chosen Cyclistic for their mobility needs.
+
+Moreno has set a clear goal: Design marketing strategies aimed at converting casual riders into annual members. In order to do that, however, the marketing analyst team needs to better understand how annual members and casual riders diﬀer, why casual riders would buy a membership, and how digital media could aﬀect their marketing tactics. Moreno and her team are interested in analyzing the Cyclistic historical bike trip data to identify trends.
+
+The following questions were identified to help the execution of this new strategy; 
+1.	How do annual members and casual riders use Cyclistic bikes diﬀerently?
+2.	Why would casual riders buy Cyclistic annual memberships? and
+3.	How can Cyclistic use digital media to inﬂuence casual riders to become members?  
+I have been mandated to answer the first question by analyzing the trip data from the last 12 months which can be found here. This data has been made available by Motivate International Inc. under this license. 
+
+# Business Task
+I am to analyze the last 12 months trip data to analyze the difference(s) in the usage Cyclistic Bikes by the annual members and casual riders. 
+
+# Key Stakeholders
+Lily Moreno: The director of marketing and my manager. Moreno is responsible for the development of campaigns and initiatives to promote the bike-share program. 
+Cyclistic marketing analytics team: A team of data analysts who are responsible for collecting, analyzing, and reporting data that helps guide Cyclistic marketing strategy. 
+Cyclistic executive team: The notoriously detail-oriented executive team will decide whether to approve the recommended marketing program. 
+
+
+# Data Source 
+Although Cyclistic is a fictional name, however its data source came from a very reliable source which by narration above can be termed an “internal data” which is one of the most reliable form of data. It is also original and is devoid of any Personally Identifiable Information (PII). 
+It is quite current and comprehensive enough for the analysis. Our data is a public data and can be found at  (https://divvy-tripdata.s3.amazonaws.com/index.html) and the license can be found at https://www.divvybikes.com/data-license-agreement. 
+I downloaded the last 12 months of the data sets to ensure that the most current behavior is analyzed and understood. When downloaded, they were unzipped and saved on a local drive with the name (Monthly_Trip_Data). Sub folders were created to keep the RAW files and another to keep the PROCESSED file and the final one will host the ANALYSED file. 
+
+
+# Process
+Cleanups is done using Excel spreadsheet on my local PC. I chose the Excel already on my PC because of unstable internet connection that may affect the speed of Google Sheets. 
+The following was done to each of the files;
+Each of the CSV was opened in Excel and two new columns were created to add; 1. Ride Length – this is the time it took from the start of the ride to when the bike was returned or when the ride ended. 2. The Day of the week that the bike was used. This two information will help us to see if there is any pattern in the way casual riders and annual members use the bike-share. 
+To calculate the Ride length, I used (=D2-C2) D2 is the first cell of the end ride time while C2 is the corresponding start ride time. I then formatted the result to time format of 00:00:00 after which I populated for the whole column. 
+The Weekday was done with the formular (=weekday(C2,1)). This gives a corresponding number value of Sunday = 1 through to Saturday = 6 in a sequential order. 
+After these, I went through each of the column header to ensure consistency. I also checked for blanks in the columns using the filter tool. 
+
+
+## Analysis
+Analyzing 12 months trip data means analyzing about 5 million rows of data. Apparently, it is better to choose SQL or R. I chose R as the preferred tool.
+The following packages were installed and loaded for analysis and visualization in R. Some further analysis will be done in Tableau. 
+
+#install and load packages 
+
+```{r load packages}
+
+library(tidyverse)
+library(ggpubr)
+library(here)
+library(skimr)
+library(janitor)
+library(lubridate)
+library(ggplot2)
+library(dplyr)  
+library(tidyr)
+library(readr)
+```
+
+#Change directory to host folder
+
+```{r directory, warning=FALSE}
+getwd()
+setwd("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED")
+
+```
+
+#import data sets and change name to ds1 - ds12
+
+```{r read.csv}
+ds1 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202108-divvy-tripdata_processed.csv")
+ds2 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202109-divvy-tripdata_processed.csv")
+ds3 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202110-divvy-tripdata_processed.csv")
+ds4 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202111-divvy-tripdata_processed.csv")
+ds5 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202112-divvy-tripdata_processed.csv")
+ds6 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202201-divvy-tripdata_processed.csv")
+ds7 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202202-divvy-tripdata_processed.csv")
+ds8 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202203-divvy-tripdata_processed.csv")
+ds9 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202204-divvy-tripdata_processed.csv")
+ds10 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202205-divvy-tripdata_processed.csv")
+ds11 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202206-divvy-tripdata_processed.csv")
+ds12 <- read.csv("C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\PROCESSED\\202207-divvy-tripdata_processed.csv")
+```
+
+
+# Create the Data Frame
+
+```{r}
+# Based on the processes done in Excel, it is clear that datasets has same structur using bind_rows we combine all the datasets into one called trips_data
+
+trips_data <- bind_rows(ds1, ds2, ds3, ds4, ds5, ds6, ds7,
+                    ds8, ds9, ds10, ds11, ds12)
+
+#a quick check of the dataframe 
+
+colnames(trips_data)
+str(trips_data)
+glimpse(trips_data)
+```
+
+# Cleanups 
+
+```{r cleanups}
+# I noticed that time and date for ride start time and end time is 
+# Character as instead of datetime using lubridate function, it will
+# converted to proper datetime dttm
+
+trips_data$started_at <- lubridate::mdy_hm(trips_data$started_at)
+
+trips_data$ended_at <- lubridate::mdy_hm(trips_data$ended_at)
+
+
+#change ride_length from Character to Time Period
+
+trips_data$ride_length <- difftime(trips_data$ended_at,
+                        trips_data$started_at, units = "mins")
+glimpse(trips_data)
+
+
+#check the minimum and maximum ride length
+min(trips_data$ride_length)
+max(trips_data$ride_length)
+
+#minimum is less than 0. any field less than 0 must be cleaned off
+
+trips_data_v2 <- trips_data %>% 
+  filter(ride_length > 0)
+
+#confirm if cleaned
+min(trips_data_v2$ride_length)
+max(trips_data_v2$ride_length)
+```
+
+# Save a cleaned version of dataset
+
+```{r}
+# remove any column not needed for visual analysis to reduce file size
+# ensure this is saved as a version 2 to preserve original data
+trips_data_v2$start_station_name = NULL
+trips_data_v2$start_station_id = NULL
+trips_data_v2$end_station_name = NULL
+trips_data_v2$end_station_id = NULL
+
+trips_data_v2$start_lat = NULL
+trips_data_v2$end_lat = NULL
+trips_data_v2$start_lng = NULL
+trips_data_v2$end_lng = NULL
+
+#create new column for day of week and month
+trips_data_v2$day_of_week <- weekdays(trips_data_v2$started_at)
+trips_data_v2$month <- format(as.Date(trips_data_v2$started_at), "%b")
+
+str(trips_data_v2)
+head(trips_data_v2, 10)
+tail(trips_data_v2, 10)
+glimpse(trips_data_v2)
+
+#column names changed from "rideable_type" to "bike_type"
+# and "member_casual" to "user_type"
+
+trips_data_v2 <- trips_data_v2 %>% 
+  rename(bike_type = rideable_type) %>% 
+  rename(user_type = member_casual) %>% 
+  glimpse()
+
+
+summary(trips_data_v2)
+
+colnames(trips_data_v2)
+```
+
+# export for visualization and further analysis in Tableau
+
+```{r}
+
+write.csv(trips_data_v2,"C:\\Users\\BEAMS\\Documents\\Monthly_Trip_Data\\ANALYZED\\analyzed_trips_v2.csv", row.names = FALSE)
+```
+
+
+
+
